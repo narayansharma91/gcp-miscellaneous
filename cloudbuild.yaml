@@ -1,0 +1,12 @@
+################| Copy sensitive information, build image and deploy into instance group | ************************************
+steps:
+- name: 'gcr.io/cloud-builders/gsutil'
+  args: ['cp', 'gs://$_BUCKET/*', '.']
+- name: gcr.io/cloud-builders/docker
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/edynamics:latest', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/$PROJECT_ID/edynamics:latest']
+- name: gcr.io/cloud-builders/gcloud
+  args: [ compute, instance-groups, managed, rolling-action, replace,  bms-testing-preemptible-instance-group, --region=asia-south1]
+
+images: ['gcr.io/$PROJECT_ID/edynamics:latest']
